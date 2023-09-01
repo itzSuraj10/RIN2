@@ -14,4 +14,11 @@ class Notification extends Model
     protected $fillable = [
         'type', 'message', 'expires_at'
     ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_notification')
+                    ->withPivot('is_read')
+                    ->withTimestamps();
+    }
 }

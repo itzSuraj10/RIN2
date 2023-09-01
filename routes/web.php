@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::redirect('/', '/users');
+
+// List users and their notification counts
+Route::get('/users', [UserController::class, 'index']);
+// Impersonate a user and display their notifications
+Route::get('/users/{user}/impersonate', [UserController::class, 'impersonate'])->name('users.impersonate');
