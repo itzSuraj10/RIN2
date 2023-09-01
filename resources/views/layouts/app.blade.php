@@ -34,6 +34,12 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/users">Users</a>
                     </li>
+                    @if(Request::route('user'))
+                    <li class="nav-item">
+                        <a class="nav-link" href={{ route('users.create-notification', ['user'=> $user->id]) }}>Post
+                            Notification</a>
+                    </li>
+                    @endif
                     <!-- Add more navigation links as needed -->
                 </ul>
             </div>

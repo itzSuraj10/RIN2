@@ -15,4 +15,12 @@ class UserController extends Controller
         // dd($users);
         return view('users.index', compact('users'));
     }
+
+    public function impersonateUser(User $user)
+{
+    // Retrieve the user's notifications
+    $notifications = $user->notifications;
+
+    return view('users.impersonate', compact('user', 'notifications'));
+}
 }
