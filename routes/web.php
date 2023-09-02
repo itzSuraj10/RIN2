@@ -24,7 +24,7 @@ Route::get('/users/{user}/impersonate', [UserController::class, 'impersonateUser
 
 // User post notification
 Route::get('/users/{user}/post-notification', [NotificationController::class, 'create'])->name('users.create-notification');
-Route::post('/users/{user}/post-notification', [NotificationController::class, 'store'])->name('users.store-notification');
+Route::post('/users/{user}/post-notification', [NotificationController::class, 'storeNotification'])->name('users.store-notification');
 
 // Mark a single notification as read
 Route::get('/mark-as-read/{user}/{notification}', [UserController::class, 'markNotificationAsRead'])->name('users.mark-as-read');
