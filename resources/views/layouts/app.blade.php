@@ -35,6 +35,10 @@
                         <a class="nav-link" href={{ route('users.create-notification', ['user'=> $user->id]) }}>Post
                             Notification</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href={{ route('users.list-notification', ['user'=> $user->id]) }}>List
+                            Notification</a>
+                    </li>
 
                     <!-- Notification Counter Icon -->
                     <li class="nav-item dropdown ">

@@ -57,4 +57,11 @@ class NotificationController extends Controller
             return redirect()->back()->with('error', 'Failed to create notification: ' . $e->getMessage());
         }
     }
+
+    public function listPostedNotifications(User $user)
+    {
+        $notifications = Notification::where('posted_by', $user->id)->get();
+
+        return view('notifications.list', compact('user', 'notifications'));
+    }
 }
