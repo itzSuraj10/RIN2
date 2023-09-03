@@ -6,8 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Notification;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Response;
-use Exception;
+// use Illuminate\Support\Facades\Response;
 
 class NotificationController extends Controller
 {
@@ -26,7 +25,7 @@ class NotificationController extends Controller
             'destination' => 'required|in:specific_user,all_users',
             'user_id' => 'required_if:destination,specific_user',
         ]);
-        
+
         try {
             // Use DB::transaction to ensure atomicity
             DB::beginTransaction();
@@ -38,7 +37,7 @@ class NotificationController extends Controller
 
             // Handle the destination based on user selection
             if ($validatedData['destination'] === 'specific_user') {
-                // Attach the notification to the specific user and mark it as unread
+                // Attach the notification to the specific user
                 $user->notifications()->attach($notification->id);
             } else {
                 // Attach the notification to all users
@@ -49,8 +48,9 @@ class NotificationController extends Controller
             }
             DB::commit();
             // return Response::json(['message' => "Creation successfully"], 200);
-            return redirect()->route('users.impersonate', ['user' => $user->id]);
-        } catch (Exception $e) {
+            // return redirect()->route('users.impersonate', ['user' => $user->id]);
+            return redirect()->back()->with('message', 'Notification created successfully');
+        } catch (\Exception $e) {
             // Handle exceptions 
             DB::rollBack();
             // return Response::json(['message' => 'Failed to create notification: ' . $e->getMessage()], 400);

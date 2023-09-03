@@ -22,6 +22,10 @@ Route::get('/users', [UserController::class, 'index']);
 // Impersonate a user
 Route::get('/users/{user}/impersonate', [UserController::class, 'impersonateUser'])->name('users.impersonate');
 
+// User Setting
+Route::get('/users/{user}/setting', [UserController::class, 'editSetting'])->name('users.edit-setting');
+Route::put('/users/{user}/setting', [UserController::class, 'updateSetting'])->name('users.update-setting');
+
 // User post notification
 Route::get('/users/{user}/post-notification', [NotificationController::class, 'create'])->name('users.create-notification');
 Route::post('/users/{user}/post-notification', [NotificationController::class, 'storeNotification'])->name('users.store-notification');

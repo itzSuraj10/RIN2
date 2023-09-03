@@ -63,18 +63,30 @@
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+@endsection
+
+@section('footer-scripts')
 <script>
     $(document).ready(function() {
-    // Listen for changes in the "Destination" dropdown
-    $('#destination').on('change', function() {
-        if ($(this).val() == 'specific_user') {
-            $('#specificUserDropdown').show();
-        } else {
-            $('#specificUserDropdown').hide();
-        }
+        $('#destination').on('change', function() {
+            if ($(this).val() == 'specific_user') {
+                $('#specificUserDropdown').show();
+            } else {
+                $('#specificUserDropdown').hide();
+            }
+        });
     });
-});
+    
+    @if(Session::has('message'))
+		swal({
+				title: "Success!",
+				text: "{{ Session::get('message') }}",
+				icon: "success",
+			})
+			.then((value) => {
+				window.location.href = "{{ route('users.impersonate', ['user' => $user->id]) }}";
+			});
+		@endif
 </script>
 @endsection

@@ -22,7 +22,7 @@
                 </td>
                 <td>{{ $user->email }}</td>
                 <td>{{ $user->phone_number ?? 'NA'}}</td>
-                <td>{{ $user->notifications_count ?? 0}}</td>
+                <td>{{ $user->unread_notifications_count}}</td>
             </tr>
             @endforeach
         </tbody>
