@@ -58,9 +58,23 @@ class NotificationController extends Controller
         }
     }
 
-    public function listPostedNotifications(User $user)
+    public function listPostedNotifications(Request $request, User $user)
     {
-        $notifications = Notification::where('posted_by', $user->id)->get();
+        $notifications = Notification::where('posted_by', $user->id);
+
+        if ($request->filled('search')) {
+            $notifications->where(function ($query) use ($request) {
+                $searchTerm = $request->input('search');
+                $query->where('message', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhere('type', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
+
+        if ($request->filled('filter')) {
+                $notifications->where('type', $request->input('filter') );
+        }
+        
+        $notifications = $notifications->get();
 
         return view('notifications.list', compact('user', 'notifications'));
     }

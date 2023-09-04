@@ -17,7 +17,7 @@ use App\Http\Controllers\NotificationController;
 Route::redirect('/', '/users');
 
 // List users and their notification counts
-Route::get('/users', [UserController::class, 'index']);
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
 
 // Impersonate a user
 Route::get('/users/{user}/impersonate', [UserController::class, 'impersonateUser'])->name('users.impersonate');

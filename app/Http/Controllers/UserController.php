@@ -8,20 +8,42 @@ use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $users = User::withCount(['notifications as unread_notifications_count' => function ($query) {
             $query->where('user_notification.is_read', 0)
             ->where('expires_at', '>=', now());
-        }])->get();
-        // dd($users);
+        }]);
+
+        if ($request->filled('search')) {
+            $users->where(function ($query) use ($request) {
+                $searchTerm = $request->input('search');
+                $query->where('name', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhere('email', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
+
+        $users = $users->get();
         return view('users.index', compact('users'));
     }
 
-    public function impersonateUser(User $user)
+    public function impersonateUser(Request $request, User $user)
     {
         // Retrieve the user's notifications
-        $notifications = $user->notifications;
+        $notifications = $user->notifications();
+
+        if ($request->filled('search')) {
+            $notifications->where(function ($query) use ($request) {
+                $searchTerm = $request->input('search');
+                $query->where('message', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhere('type', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
+
+        if ($request->filled('filter')) {
+                $notifications->where('type', $request->input('filter') );
+        }
+        $notifications = $notifications->get();
 
         return view('users.impersonate', compact('user', 'notifications'));
     }
@@ -42,7 +64,7 @@ class UserController extends Controller
             'email' => 'required|email',
             'phone_number' => 'nullable|numeric', 
         ]);
-
+        
         try {
             // Use DB::transaction to ensure atomicity
             DB::beginTransaction();
