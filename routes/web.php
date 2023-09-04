@@ -30,10 +30,5 @@ Route::put('/users/{user}/setting', [UserController::class, 'updateSetting'])->n
 Route::get('/users/{user}/post-notification', [NotificationController::class, 'create'])->name('users.create-notification');
 Route::post('/users/{user}/post-notification', [NotificationController::class, 'storeNotification'])->name('users.store-notification');
 Route::get('/users/{user}/notification-list', [NotificationController::class, 'listPostedNotifications'])->name('users.list-notification');
-
-
-// Mark a single notification as read
-Route::get('/mark-as-read/{user}/{notification}', [UserController::class, 'markNotificationAsRead'])->name('users.mark-as-read');
-
-// Mark all notifications as read
-Route::get('/mark-all-as-read/{user}', [UserController::class, 'markAllNotificationsAsRead'])->name('users.mark-all-as-read');
+Route::get('/users/{user}/get-notification', [NotificationController::class, 'getNotification'])->name('users.get-notification');
+Route::post('/users/{user}/markNotifyRead/{notificationId}', [NotificationController::class, 'markNotifyRead'])->name('users.mark-notify-read');

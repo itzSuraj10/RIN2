@@ -30,7 +30,10 @@ class UserController extends Controller
     public function impersonateUser(Request $request, User $user)
     {
         // Retrieve the user's notifications
-        $notifications = $user->notifications();
+        $notifications = $user->notifications()
+        ->wherePivot('is_read', 0)
+        ->where('expires_at', '>=', now())
+        ->orderBy('notifications.created_at', 'desc');
 
         if ($request->filled('search')) {
             $notifications->where(function ($query) use ($request) {

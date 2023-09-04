@@ -44,14 +44,10 @@
                     <li class="nav-item dropdown ">
                         <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa fa-bell"><span class="">45</span></i>
+                            <i class="fa fa-bell"><span id="notificationCount">0</span></i>
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="notificationDropdown">
-                            <a class="dropdown-item" href="#">Notification 1 - 45 minutes ago</a>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <a class="dropdown-item" href="#">Notification 2 - 1 hour ago</a>
+                        <ul id="notificationsDropdown" class="dropdown-menu" aria-labelledby="notificationDropdown">
+
                         </ul>
                     </li>
 
@@ -98,8 +94,68 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"
         integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
     @yield('footer-scripts')
+
+    <script>
+        $(document).ready(function() {
+            // Function to load notifications and update the notification count
+            function loadNotifications() {
+                $.ajax({
+                    url: "{{ route('users.get-notification', ['user'=> $user->id]) }}",
+                    type: "GET",
+                    dataType: "json",
+                    success: function(response) {
+                        // Update the notification count in the navbar
+                        $('#notificationCount').text(response.unreadCount);
+
+                        // Clear and rebuild the notifications dropdown
+                        var notificationsDropdown = $('#notificationsDropdown');
+                        notificationsDropdown.empty();
+
+                        $.each(response.notifications, function(index, notification) {
+                            var createdAt = moment(notification.created_at).fromNow();
+                            var notificationLink = $(
+                                '<a class="dropdown-item" href="#">' +
+                                notification.message + ' - ' +
+                                createdAt + '</a>'
+                            );
+
+                            notificationLink.click(function() {
+                                // Send an AJAX request to mark the notification as read
+                                $.ajax({
+                                    url: "/users/"  + {{ $user->id }} + "/markNotifyRead/" + notification.id,
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: {
+                                        _token: "{{ csrf_token() }}",
+                                    },
+                                    success: function(resp) {
+                                        loadNotifications();
+                                    },
+                                    error: function(error) {
+                                        console.error(error);
+                                    }
+                                });
+                            });
+                            
+
+                            notificationsDropdown.append(notificationLink);
+                            notificationsDropdown.append('<hr class="dropdown-divider">');
+                        });
+                    },
+                    error: function(error) {
+                        console.error(error);
+                    }
+                });
+            }
+            @if(isset($user->id))
+            // Load notifications on page load
+            loadNotifications();
+            @endif
+        });
+    </script>
 </body>
 
 </html>

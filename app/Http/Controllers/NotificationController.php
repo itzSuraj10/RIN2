@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Notification;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 // use Illuminate\Support\Facades\Response;
 
 class NotificationController extends Controller
@@ -77,5 +78,35 @@ class NotificationController extends Controller
         $notifications = $notifications->get();
 
         return view('notifications.list', compact('user', 'notifications'));
+    }
+
+    public function getNotification(Request $request, User $user)
+    {
+        // Fetch notifications
+        $notifications = $user->notifications()
+            ->wherePivot('is_read', 0)
+            ->where('expires_at', '>=', now())
+            ->orderBy('notifications.created_at', 'desc');
+
+        // Get the count of unread notifications
+        $unreadCount = $notifications->count();
+
+        return response()->json([
+            'notifications' => $notifications->get(),
+            'unreadCount' => $unreadCount,
+        ]);
+    }
+
+    public function markNotifyRead(User $user, $notificationId)
+    {
+        try {
+            // dd($notificationId);
+            $user->notifications()->updateExistingPivot($notificationId, ['is_read' => 1]);
+
+            return response()->json(['message' => 'Notification marked as read'], 200);
+        } catch (\Exception $e) {
+            // Handle exceptions 
+            return response()->json(['error' => 'Failed to mark notification as read: ' . $e->getMessage()], 400);
+        }
     }
 }
